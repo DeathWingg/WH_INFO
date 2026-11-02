@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Configurações{% endblock %}
+{% block heading %}Configurações{% endblock %}
+{% block content %}
+<form method="post" class="form panel">
+  <fieldset style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+    <legend style="padding: 0 8px; color: var(--blue-2); font-weight: bold;">Dados da Loja</legend>
+    <div class="grid-2">
+      <label>Nome <input name="store_name" value="{{ settings.store_name }}" style="padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+      <label>Telefone <input name="store_phone" value="{{ settings.store_phone }}" style="padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+    </div>
+    <label style="margin-top: 12px; display: block;">Endereço <input name="store_address" value="{{ settings.store_address }}" style="width: 100%; padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+  </fieldset>
+  <fieldset style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+    <legend style="padding: 0 8px; color: var(--blue-2); font-weight: bold;">Margens de Lucro (%)</legend>
+    <div class="grid-3">
+      <label>À vista <input type="number" step="0.01" name="margin_cash" value="{{ settings.margin_cash }}" style="padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+      <label>Débito <input type="number" step="0.01" name="margin_debit" value="{{ settings.margin_debit }}" style="padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+      <label>Crédito <input type="number" step="0.01" name="margin_credit" value="{{ settings.margin_credit }}" style="padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+    </div>
+  </fieldset>
+  <fieldset style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+    <legend style="padding: 0 8px; color: var(--blue-2); font-weight: bold;">Segurança</legend>
+    <label>Nova Senha (deixe em branco para não alterar) <input type="password" name="new_password" style="padding: 10px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></label>
+  </fieldset>
+  <button class="btn">Salvar Configurações</button>
+</form>
+<h2>Taxas do Cartão</h2>
+<form method="post" action="{{ url_for('configuracoes_taxas') }}" class="panel">
+  <table>
+    <thead><tr><th>Modalidade</th><th>Parcelas</th><th>Taxa %</th></tr></thead>
+    <tbody>
+    {% for f in fees %}
+      <tr>
+        <td>{{ {'cash':'À vista','debit':'Débito','credit':'Crédito'}.get(f.method, f.method) }}</td>
+        <td>{{ f.installments }}x</td>
+        <td><input type="number" step="0.01" name="fee_{{ f.method }}_{{ f.installments }}" value="{{ '%.2f'|format(f.fee_percent) }}" style="width: 100px; padding: 6px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;"></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn" style="margin-top: 16px;">Salvar Taxas</button>
+</form>
+<h2 style="color: var(--danger); margin-top: 40px;">Zona de Perigo</h2>
+<div class="panel" style="border: 1px solid var(--danger);">
+  <h3 style="margin-top: 0; color: var(--danger);">Limpar Estatísticas de Teste</h3>
+  <p class="muted" style="font-size: 14px; margin-bottom: 16px;">
+    Cuidado: Isso apagará <b>TODAS as vendas</b>, o faturamento e os lucros registrados no sistema. 
+    O estoque dos produtos que foram vendidos será devolvido automaticamente. Seus produtos e fotos <b>não serão apagados</b>.
+  </p>
+  <form method="post" action="{{ url_for('limpar_vendas') }}" onsubmit="return confirm('ATENÇÃO: Isso apagará todo o histórico de vendas. O estoque será devolvido. Tem certeza absoluta?');">
+    <button class="btn danger" type="submit" style="color: white; font-weight: bold; padding: 12px 20px; font-size: 15px;">Apagar Todas as Vendas e Zerar Estatísticas</button>
+  </form>
+</div>
+{% endblock %}

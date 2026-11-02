@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block heading %}Painel Administrativo{% endblock %}
+{% block actions %}
+  <a class="btn" href="{{ url_for('produto_novo') }}">+ Cadastrar produto</a>
+  <a class="btn btn-secondary" href="{{ url_for('vendas') }}">Nova venda</a>
+{% endblock %}
+{% block content %}
+<div class="cards">
+  <div class="card"><span>Produtos ativos</span><strong>{{ stats.products }}</strong></div>
+  <div class="card"><span>Vendas realizadas</span><strong>{{ stats.sales_count }}</strong></div>
+  <div class="card accent"><span>Faturamento hoje</span><strong>{{ stats.today_revenue|brl }}</strong></div>
+  <div class="card"><span>Lucro estimado (hoje)</span><strong>{{ stats.today_profit|brl }}</strong></div>
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>Estoque baixo</h2>
+    {% if stats.low_stock %}
+      <table>
+        <thead><tr><th>Produto</th><th>Variação</th><th>Estoque</th></tr></thead>
+        <tbody>
+        {% for item in stats.low_stock %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.storage }} {{ item.color }}</td>
+            <td class="danger">{{ item.stock }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">Nenhum produto com estoque baixo.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h2>Vendas recentes</h2>
+    {% if stats.recent_sales %}
+      <table>
+        <thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th></th></tr></thead>
+        <tbody>
+        {% for s in stats.recent_sales %}
+          <tr>
+            <td>{{ s.sale_number }}</td>
+            <td>{{ s.client_name or '—' }}</td>
+            <td>{{ s.total|brl }}</td>
+            <td><a href="{{ url_for('venda_ficha', sale_id=s.id) }}">ver</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">Nenhuma venda registrada.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Venda {{ sale.sale_number }}{% endblock %}
+{% block heading %}Detalhes da Venda {{ sale.sale_number }}{% endblock %}
+{% block actions %}
+  <a class="btn" href="{{ url_for('venda_ficha', sale_id=sale.id) }}">Ver Ficha</a>
+  <a class="btn btn-secondary" target="_blank" href="{{ url_for('venda_pdf', sale_id=sale.id) }}">Baixar PDF</a>
+{% endblock %}
+{% block content %}
+<div class="grid-2">
+  <div class="panel">
+    <h2>Informações Gerais</h2>
+    <p><b>Data:</b> {{ sale.created_at }}</p>
+    <p><b>Cliente:</b> {{ sale.client_name or 'Não identificado' }}</p>
+    <p><b>Pagamento:</b> {{ {'cash':'À vista','debit':'Débito','credit':'Crédito'}[sale.payment_method] }}
+       {% if sale.installments>1 %} — {{ sale.installments }}x de {{ (sale.total/sale.installments)|brl }}{% endif %}</p>
+    <p style="font-size: 20px; margin-top: 20px;"><b>Total Pago:</b> <span style="color: var(--blue-2);">{{ sale.total|brl }}</span></p>
+    <p class="muted" style="margin-top: 20px; font-size: 14px; border-top: 1px solid var(--border); padding-top: 10px;">
+      <b>Lucro Estimado (Interno):</b> <span class="danger">{{ sale.profit|brl }}</span>
+    </p>
+  </div>
+  <div class="panel">
+    <h2>Itens da Venda</h2>
+    <table>
+      <thead><tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th></tr></thead>
+      <tbody>
+      {% for it in sale['items'] %}
+        <tr>
+          <td>{{ it.product_name }}<br><small class="muted">{{ it.storage }} {{ it.color }}</small></td>
+          <td>{{ it.quantity }}</td>
+          <td>{{ it.unit_price|brl }}</td>
+          <td>{{ (it.unit_price*it.quantity)|brl }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

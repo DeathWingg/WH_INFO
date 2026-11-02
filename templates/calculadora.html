@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Calculadora{% endblock %}
+{% block heading %}Calculadora de Preços{% endblock %}
+{% block content %}
+<div class="panel">
+  <div style="display: flex; gap: 16px; align-items: flex-end;">
+    <label style="flex: 1; display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 14px;">Selecione o aparelho/versão
+      <select id="variation" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+        <option value="">— escolha —</option>
+        {% for v in variations %}
+          <option value="{{ v.id }}">{{ v.product_name }} — {{ v.storage }} {{ v.color }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="btn" id="calc-btn" style="padding: 12px 24px;">Calcular</button>
+  </div>
+</div>
+
+<div id="calc-result"></div>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.WH_INFO = { calcUrl: "{{ url_for('api_precos', vid=0) }}".replace('/0','') };
+</script>
+<script src="{{ url_for('static', filename='js/calculadora.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}WH INFO{% endblock %} — WH INFO</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">WH</div>
+      <div>
+        <strong>WH INFO</strong>
+        <small>Sistema de Gerenciamento</small>
+      </div>
+    </div>
+    <nav>
+      <a href="{{ url_for('dashboard') }}"   class="{{ 'active' if request.endpoint=='dashboard' }}">🏠 Início</a>
+      <a href="{{ url_for('vendas') }}"      class="{{ 'active' if request.endpoint=='vendas' }}">🛒 Vendas</a>
+      <a href="{{ url_for('produtos') }}"    class="{{ 'active' if request.endpoint in ('produtos','produto_novo','produto_editar') }}">📱 Produtos</a>
+      <a href="{{ url_for('calculadora') }}" class="{{ 'active' if request.endpoint=='calculadora' }}">🧮 Calculadora</a>
+      <a href="{{ url_for('historico') }}"   class="{{ 'active' if request.endpoint and request.endpoint.startswith('historico') }}">📜 Histórico</a>
+      <a href="{{ url_for('relatorios') }}"  class="{{ 'active' if request.endpoint=='relatorios' }}">📊 Relatórios</a>
+      <hr style="border-color: rgba(255,255,255,0.1); width: 100%; margin: 10px 0;">
+      <a href="{{ url_for('configuracoes') }}" class="{{ 'active' if request.endpoint=='configuracoes' }}">⚙️ Configurações</a>
+      <a href="{{ url_for('backup_page') }}"   class="{{ 'active' if request.endpoint=='backup_page' }}">💾 Backup</a>
+      <a href="{{ url_for('sobre') }}"         class="{{ 'active' if request.endpoint=='sobre' }}">ℹ️ Sobre</a>
+    </nav>
+    <div class="sidebar-footer">
+      {% if is_admin %}
+        <a href="{{ url_for('logout') }}" class="btn-small">Sair</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn-small">Entrar como admin</a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1>{% block heading %}{% endblock %}</h1>
+      <div class="topbar-actions">{% block actions %}{% endblock %}</div>
+    </header>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for cat, msg in messages %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

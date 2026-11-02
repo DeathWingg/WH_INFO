@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Vendas{% endblock %}
+{% block heading %}Ponto de Venda{% endblock %}
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 400px; gap: 20px;">
+  
+  <section class="panel">
+    <h2>Catálogo de Aparelhos</h2>
+    <input type="search" id="search-variations" placeholder="Filtrar por nome, cor..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white; margin-bottom: 16px;">
+    
+    <div id="catalog" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; max-height: 65vh; overflow-y: auto;">
+      {% for v in variations %}
+        <button class="catalog-item" 
+                data-id="{{ v.id }}"
+                data-name="{{ v.product_name }}"
+                data-storage="{{ v.storage }}"
+                data-color="{{ v.color }}"
+                data-stock="{{ v.stock }}"
+                data-cost="{{ v.supplier_cost }}"
+                data-category="{{ v.category }}"
+                data-image="{{ v.color_image or v.primary_image or '' }}"
+                style="background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: left; cursor: pointer; color: white; display: flex; flex-direction: column; gap: 6px; transition: 0.2s;">
+          
+          <div style="height: 100px; display: flex; align-items: center; justify-content: center;">
+            {% if v.color_image or v.primary_image %}
+              <img src="{{ url_for('media', filename=(v.color_image or v.primary_image)) }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+            {% else %}
+              <span style="font-size: 40px; opacity: 0.3;">📱</span>
+            {% endif %}
+          </div>
+          <strong style="font-size: 14px;">{{ v.product_name }}</strong>
+          <small style="color: var(--muted);">{{ v.storage }} {{ v.color }}</small>
+          <span style="background: var(--panel); padding: 2px 6px; border-radius: 4px; font-size: 11px; width: fit-content;">Estoque: {{ v.stock }}</span>
+        </button>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="panel" style="height: fit-content;">
+    <h2>Carrinho</h2>
+    <div id="cart-items" style="margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; max-height: 40vh; overflow-y: auto;">
+      <p class="muted" style="font-size: 14px;">Selecione produtos no catálogo.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted);">Pagamento
+        <select id="payment-method" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+          <option value="cash">À vista</option>
+          <option value="debit">Débito</option>
+          <option value="credit">Crédito</option>
+        </select>
+      </label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted);">Parcelas
+        <select id="installments" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+          <option value="1">1x</option>
+          <option value="2">2x</option>
+          <option value="3">3x</option>
+          <option value="4">4x</option>
+          <option value="5">5x</option>
+          <option value="6">6x</option>
+          <option value="10">10x</option>
+          <option value="12">12x</option>
+        </select>
+      </label>
+    </div>
+
+    <fieldset style="border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+      <legend style="font-size: 12px; color: var(--blue-2);">Cliente (Opcional)</legend>
+      <input id="client-name" placeholder="Nome completo" style="width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: white;">
+      <input id="client-phone" placeholder="Telefone" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: white;">
+    </fieldset>
+
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
+      <label style="flex: 1; font-size: 13px; color: var(--muted);">Desconto (%)
+        <input type="number" id="discount" value="0" min="0" max="100" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+      </label>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-2); border-radius: 8px; margin-bottom: 16px; font-size: 20px;">
+      <span>Total</span>
+      <strong id="cart-total" style="color: var(--blue-2);">R$ 0,00</strong>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 16px 16px 16px; font-size: 13px;">
+      <span class="muted">Lucro Estimado (Interno):</span>
+      <strong id="cart-profit" style="color: var(--success);">R$ 0,00</strong>
+    </div>
+
+    <button class="btn" id="checkout" style="width: 100%; justify-content: center; padding: 14px; font-size: 16px;">Finalizar Venda</button>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.WH_INFO = {{ js_data | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/sales.js') }}"></script>
+{% endblock %}

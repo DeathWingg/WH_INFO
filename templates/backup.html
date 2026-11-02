@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Backup{% endblock %}
+{% block heading %}Backup e Restauração{% endblock %}
+{% block content %}
+<div class="grid-2">
+  <section class="panel">
+    <h2>Criar Backup</h2>
+    <p class="muted" style="margin-bottom: 16px;">Compacta o banco e imagens num .zip.</p>
+    <form method="post">
+      <input type="hidden" name="action" value="criar">
+      <button class="btn">💾 Criar Backup Agora</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Restaurar Backup</h2>
+    <p class="muted" style="margin-bottom: 16px;">Atenção: substituirá os dados atuais!</p>
+    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza?')">
+      <input type="hidden" name="action" value="restaurar">
+      <input type="file" name="file" accept=".zip" required style="margin-bottom: 12px; display: block; color: white;">
+      <button class="btn danger">Restaurar</button>
+    </form>
+  </section>
+</div>
+<section class="panel">
+  <h2>Backups Disponíveis</h2>
+  {% if backups %}
+  <table>
+    <thead><tr><th>Arquivo</th><th>Ações</th></tr></thead>
+    <tbody>
+    {% for b in backups %}
+      <tr><td>{{ b.name }}</td><td><a href="{{ url_for('backup_download', filename=b.name) }}" class="btn btn-small btn-secondary">Baixar</a></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">Nenhum backup criado.</p>{% endif %}
+</section>
+{% endblock %}

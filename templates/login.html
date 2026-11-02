@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Entrar — WH INFO</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+  <form class="panel" method="post" style="width: 320px;">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div class="logo-box" style="margin: 0 auto 12px auto; width: 50px; height: 50px; font-size: 24px;">WH</div>
+      <h2>Acesso Restrito</h2>
+      <p class="muted" style="font-size: 13px;">Digite a senha de administrador</p>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+    {% endwith %}
+    
+    <label style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+      <input type="password" name="password" required autofocus style="padding: 12px; background: var(--bg); color: white; border: 1px solid var(--border); border-radius: 6px;">
+    </label>
+    <button class="btn" style="width: 100%; justify-content: center; margin-bottom: 12px;">Entrar</button>
+    <a href="{{ url_for('dashboard') }}" class="muted" style="display: block; text-align: center; font-size: 13px;">Voltar ao início</a>
+  </form>
+</body>
+</html>

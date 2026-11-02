@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Ficha {{ sale.sale_number }}{% endblock %}
+{% block heading %}Venda Finalizada!{% endblock %}
+{% block actions %}
+  <a class="btn" target="_blank" href="{{ url_for('venda_pdf', sale_id=sale.id) }}">🖨️ Imprimir Ficha</a>
+  <a class="btn btn-secondary" href="{{ url_for('venda_pdf', sale_id=sale.id) }}?download=1">💾 Salvar PDF</a>
+{% endblock %}
+{% block content %}
+<div class="panel" style="max-width: 600px; margin: 0 auto;">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h2 style="color: var(--success); margin-bottom: 8px;">✓ Venda concluída com sucesso!</h2>
+    <p class="muted">Número da venda: <b>{{ sale.sale_number }}</b></p>
+  </div>
+  
+  <table style="width: 100%; margin-bottom: 24px;">
+    <tr><td><b>Data:</b></td><td style="text-align: right;">{{ sale.created_at }}</td></tr>
+    {% if sale.client_name %}
+    <tr><td><b>Cliente:</b></td><td style="text-align: right;">{{ sale.client_name }}</td></tr>
+    {% endif %}
+    <tr>
+      <td><b>Pagamento:</b></td>
+      <td style="text-align: right;">
+        {{ {'cash':'À vista','debit':'Débito','credit':'Crédito'}[sale.payment_method] }}
+        {% if sale.installments > 1 %} em {{ sale.installments }}x{% endif %}
+      </td>
+    </tr>
+  </table>
+
+  <h3 style="font-size: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Itens da Venda</h3>
+    {% for it in sale['items'] %}
+    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--border);">
+      <div>
+        <strong>{{ it.product_name }}</strong><br>
+        <small class="muted">{{ it.storage }} {{ it.color }}</small>
+      </div>
+      <div style="text-align: right;">
+        {{ it.quantity }}x {{ it.unit_price|brl }}<br>
+        <strong>{{ (it.unit_price * it.quantity)|brl }}</strong>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; font-size: 24px; background: var(--bg-2); padding: 16px; border-radius: 8px;">
+    <span>TOTAL:</span>
+    <strong style="color: var(--blue-2);">{{ sale.total|brl }}</strong>
+  </div>
+  
+  <div style="text-align: center; margin-top: 32px;">
+    <a href="{{ url_for('vendas') }}" class="muted">← Voltar para nova venda</a>
+  </div>
+</div>
+{% endblock %}

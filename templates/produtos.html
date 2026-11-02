@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Produtos{% endblock %}
+{% block heading %}Catálogo de Produtos{% endblock %}
+{% block actions %}<a class="btn" href="{{ url_for('produto_novo') }}">+ Novo produto</a>{% endblock %}
+{% block content %}
+<form class="filters" method="get" style="display: flex; gap: 10px; margin-bottom: 20px;">
+  <input type="search" name="q" placeholder="Buscar produto..." value="{{ search }}" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white; flex: 1;">
+  <select name="m" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+    <option value="">Todos os fabricantes</option>
+    {% for mf in manufacturers %}
+      <option value="{{ mf.name }}" {{ 'selected' if mf.name==search }}>{{ mf.name }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn">Filtrar</button>
+</form>
+
+{% if products %}
+<div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
+  {% for p in products %}
+  <article class="product-card" style="background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column;">
+    
+    <!-- Imagem do produto -->
+    <div style="height: 160px; background: var(--bg-2); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+      {% if p.primary_image %}
+        <img src="{{ url_for('media', filename=p.primary_image) }}" alt="{{ p.name }}" style="max-height: 100%; object-fit: contain;">
+      {% else %}
+        <div style="font-size: 48px; opacity: .3;">📱</div>
+      {% endif %}
+    </div>
+
+    <!-- Informações e botões -->
+    <div style="padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1;">
+      <h3 style="margin: 0; font-size: 16px;">{{ p.name }}</h3>
+      <small class="muted">{{ p.manufacturer_name or '' }} {{ p.model or '' }}</small>
+      
+      <div style="margin-top: auto; padding-top: 10px;">
+        <span style="background: var(--bg-2); padding: 4px 8px; border-radius: 6px; font-size: 12px;">Estoque: {{ p.total_stock }}</span>
+      </div>
+      
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <a class="btn btn-small" href="{{ url_for('produto_editar', pid=p.id) }}">Editar</a>
+        
+        {% if is_admin %}
+        <form method="post" action="{{ url_for('produto_excluir', pid=p.id) }}" onsubmit="return confirm('Tem certeza que deseja excluir este produto? Todas as versões serão apagadas.');" style="margin: 0;">
+          <button class="btn btn-small danger" type="submit" style="color: white; padding: 6px 12px; font-weight: bold;">Excluir</button>
+        {% endif %}
+      </div>
+    </div>
+    
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+  <div class="panel"><p class="muted">Nenhum produto cadastrado ainda. Clique em "+ Novo produto" para começar!</p></div>
+{% endif %}
+{% endblock %}

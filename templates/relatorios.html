@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Relatórios{% endblock %}
+{% block heading %}Relatórios Financeiros{% endblock %}
+{% block actions %}<a class="btn btn-secondary" href="{{ url_for('relatorios_csv', **request.args) }}">📥 Exportar CSV</a>{% endblock %}
+{% block content %}
+<form class="filters" method="get" style="display: flex; gap: 10px; margin-bottom: 20px;">
+  <label style="color: var(--muted); font-size: 14px;">De <input type="date" name="from" value="{{ date_from }}" style="padding: 8px; background: var(--bg-2); border: 1px solid var(--border); color: white; border-radius: 6px;"></label>
+  <label style="color: var(--muted); font-size: 14px;">Até <input type="date" name="to" value="{{ date_to }}" style="padding: 8px; background: var(--bg-2); border: 1px solid var(--border); color: white; border-radius: 6px;"></label>
+  <button class="btn">Aplicar Filtro</button>
+</form>
+<div class="cards">
+  <div class="card"><span>Vendas no Período</span><strong>{{ report.summary.c }}</strong></div>
+  <div class="card"><span>Faturamento</span><strong>{{ report.summary.t|brl }}</strong></div>
+  <div class="card accent"><span>Lucro Estimado</span><strong>{{ report.summary.p|brl }}</strong></div>
+</div>
+<div class="grid-2">
+  <section class="panel">
+    <h2>Por Forma de Pagamento</h2>
+    <table>
+      <thead><tr><th>Forma</th><th>Qtd</th><th>Total</th></tr></thead>
+      <tbody>
+      {% for m in report.by_method %}
+        <tr><td>{{ {'cash':'À vista','debit':'Débito','credit':'Crédito'}.get(m.payment_method, m.payment_method) }}</td><td>{{ m.c }}</td><td>{{ m.t|brl }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Top 20 Produtos Mais Vendidos</h2>
+    <table>
+      <thead><tr><th>Produto</th><th>Qtd</th><th>Total</th></tr></thead>
+      <tbody>
+      {% for p in report.top_products %}
+        <tr><td>{{ p.product_name }}</td><td>{{ p.qty }}</td><td>{{ p.total|brl }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+{% endblock %}

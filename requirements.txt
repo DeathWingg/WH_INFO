@@ -1,0 +1,6 @@
+Flask
+Pillow
+reportlab
+requests
+pytest
+pyinstaller

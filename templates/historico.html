@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Histórico{% endblock %}
+{% block heading %}Histórico de Vendas{% endblock %}
+{% block content %}
+<form class="filters" method="get" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+  <input name="q" placeholder="Nº da venda, cliente ou produto..." value="{{ search }}" style="flex: 1; min-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+  <select name="p" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+    <option value="">Todas as formas</option>
+    <option value="cash" {{ 'selected' if payment=='cash' }}>À vista</option>
+    <option value="debit" {{ 'selected' if payment=='debit' }}>Débito</option>
+    <option value="credit" {{ 'selected' if payment=='credit' }}>Crédito</option>
+  </select>
+  <input type="date" name="from" value="{{ date_from }}" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+  <input type="date" name="to" value="{{ date_to }}" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: white;">
+  <button class="btn">Filtrar</button>
+</form>
+
+{% if sales %}
+<div class="panel" style="overflow-x: auto;">
+  <table>
+    <thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Pagamento</th><th>Total</th><th>Ações</th></tr></thead>
+    <tbody>
+    {% for s in sales %}
+      <tr>
+        <td><b>{{ s.sale_number }}</b></td>
+        <td>{{ s.created_at[:16] }}</td>
+        <td>{{ s.client_name or '—' }}</td>
+        <td>{{ {'cash':'À vista','debit':'Débito','credit':'Crédito'}[s.payment_method] }} {% if s.installments > 1 %}<small class="muted">({{ s.installments }}x)</small>{% endif %}</td>
+        <td><b>{{ s.total|brl }}</b></td>
+        <td>
+          <a href="{{ url_for('historico_detalhe', sale_id=s.id) }}" class="btn btn-small btn-secondary">Detalhes</a>
+          <a href="{{ url_for('venda_pdf', sale_id=s.id) }}" target="_blank" class="btn btn-small">PDF</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <div class="panel"><p class="muted">Nenhuma venda encontrada.</p></div>
+{% endif %}
+{% endblock %}
